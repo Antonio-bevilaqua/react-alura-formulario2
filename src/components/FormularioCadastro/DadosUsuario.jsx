@@ -1,13 +1,15 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { TextField, Button } from "@material-ui/core";
 import ValidacoesCadastro from "../../context/ValidacoesCadastro";
+import DadosCadastro from "../../context/DadosCadastro";
+import useValues from "../../hooks/useValues.js";
 import useErros from "../../hooks/useErros.js";
 
 function DadosUsuario({ aoEnviar }) {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const validacoes = useContext(ValidacoesCadastro);
-  const [erros, validaCampo, validaForm] = useErros(validacoes);
+  const dadosCadastro = useContext(DadosCadastro);
+  const {erros, validaCampo, validaForm} = useErros(validacoes);
+  const {dadosColetados, insereDado, get} = useValues(dadosCadastro.dados);
 
   return (
     <form
@@ -15,10 +17,8 @@ function DadosUsuario({ aoEnviar }) {
       onSubmit={(event) => {
         event.preventDefault();
         if (validaForm(event)) {
-          aoEnviar({
-            email: email,
-            senha: senha,
-          });
+          dadosCadastro.setDados(dadosColetados);
+          aoEnviar();
         }
       }}
     >
@@ -30,9 +30,9 @@ function DadosUsuario({ aoEnviar }) {
         label="Email"
         required
         type="email"
-        value={email}
+        value={get("email")}
         onChange={(event) => {
-          setEmail(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         helperText={erros.email.texto}
@@ -46,9 +46,9 @@ function DadosUsuario({ aoEnviar }) {
         name="senha"
         label="Senha"
         required
-        value={senha}
+        value={get("senha")}
         onChange={(event) => {
-          setSenha(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         helperText={erros.senha.texto}

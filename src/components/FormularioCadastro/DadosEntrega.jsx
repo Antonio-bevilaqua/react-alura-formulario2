@@ -1,48 +1,63 @@
-import React, { useState, useContext } from "react";
-import { TextField, Button, Box } from "@material-ui/core";
+import React, { useContext } from "react";
+import {
+  TextField,
+  Button,
+  Box,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  FormControl,
+  OutlinedInput,
+  FormHelperText
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
 import { mascaraCep } from "./mascaras";
 import ValidacoesCadastro from "../../context/ValidacoesCadastro";
+import DadosCadastro from "../../context/DadosCadastro";
+import getLocalizacaoCep from "../../models/getLocalizacaoCep";
 import useErros from "../../hooks/useErros.js";
+import useValues from "../../hooks/useValues.js";
 
 function DadosEntrega({ aoEnviar, voltar }) {
-  const [cep, setCep] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [numero, setNumero] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [estado, setEstado] = useState("");
   const validacoes = useContext(ValidacoesCadastro);
-  const [erros, validaCampo, validaForm] = useErros(validacoes);
+  const dadosCadastro = useContext(DadosCadastro);
+  const {erros, validaCampo, validaCampoKeyValue, validaForm} = useErros(validacoes);
+  const {dadosColetados, insereDado, insereDadoKeyValue, get} = useValues(dadosCadastro.dados);
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
         if (validaForm(event)) {
-          aoEnviar({
-            cep: cep,
-            endereco: endereco,
-            numero: numero,
-            cidade: cidade,
-            estado: estado,
-          });
+          dadosCadastro.setDados(dadosColetados);
+          aoEnviar();
         }
       }}
     >
-      <TextField
-        variant="outlined"
-        margin="normal"
-        id="cep"
-        name="cep"
-        label="CEP"
-        type="text"
-        value={cep}
-        onChange={(event) => {
-          setCep(mascaraCep(event.target.value));
-          validaCampo(event);
-        }}
-        helperText={erros.cep.texto}
-        error={!erros.cep.valido}
-      />
+      <FormControl variant="outlined" margin="normal">
+        <InputLabel htmlFor="cep">CEP</InputLabel>
+        <OutlinedInput
+          id="cep"
+          name="cep"
+          label="CEP"
+          type={"text"}
+          value={get("cep")}
+          onChange={(event) => {
+            insereDado(event, mascaraCep);
+            validaCampo(event);
+          }}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton aria-label="Buscar o cep" onClick={() => { getLocalizacaoCep(dadosColetados.cep, insereDadoKeyValue, validaCampoKeyValue ); }}>
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          }
+          error={!erros.cep.valido}
+        />
+        <FormHelperText id="erro-cep" error={!erros.cep.valido}>{erros.cep.texto}</FormHelperText>
+      </FormControl>
+      
       <TextField
         variant="outlined"
         margin="normal"
@@ -50,9 +65,9 @@ function DadosEntrega({ aoEnviar, voltar }) {
         name="endereco"
         label="Endereço"
         type="text"
-        value={endereco}
+        value={get("endereco")}
         onChange={(event) => {
-          setEndereco(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         helperText={erros.endereco.texto}
@@ -66,9 +81,9 @@ function DadosEntrega({ aoEnviar, voltar }) {
         label="Número"
         name="numero"
         type="number"
-        value={numero}
+        value={get("numero")}
         onChange={(event) => {
-          setNumero(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         helperText={erros.numero.texto}
@@ -81,9 +96,9 @@ function DadosEntrega({ aoEnviar, voltar }) {
         label="Cidade"
         type="text"
         name="cidade"
-        value={cidade}
+        value={get("cidade")}
         onChange={(event) => {
-          setCidade(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         helperText={erros.cidade.texto}
@@ -96,9 +111,9 @@ function DadosEntrega({ aoEnviar, voltar }) {
         label="Estado"
         type="text"
         name="estado"
-        value={estado}
+        value={get("estado")}
         onChange={(event) => {
-          setEstado(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         helperText={erros.estado.texto}

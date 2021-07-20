@@ -1,5 +1,6 @@
 import validadorCPF from "./validadorCpf";
 import validadorEmail from "./validadorEmail";
+import validadorData from "./validadorData";
 
 function validadorRequired(text) {
   return text.length > 0;
@@ -37,11 +38,31 @@ function validarSenha(text) {
   return { valido: true, texto: "" };
 }
 
-function validarCep(text) {
-    if (text.length < 9)
-      return { valido: false, texto: "Seu cep deve ter 8 números." };
-  
-    return { valido: true, texto: "" };
-  }
+function validarTelefone(text) {
+  text = text.replace(/\D/g, "");
+  if (text.length < 10)
+    return { valido: false, texto: "Número de telefone inválido." };
 
-export { validarRequired, validarCPF, validarSenha, validarEmail, validarCep };
+  return { valido: true, texto: "" };
+}
+
+function validarCep(text) {
+  text = text.replace(/\D/g, "");
+  if (text.length < 8)
+    return { valido: false, texto: "Seu cep deve ter 8 números." };
+
+  return { valido: true, texto: "" };
+}
+
+function validarData(text) {
+  let textLength = text.replace(/\D/g, "").length;
+  if (textLength < 8)
+    return { valido: false, texto: "Sua data deve ter o formato dd/mm/YYYY." };
+
+  if (!validadorData(text))
+    return { valido: false, texto: "Data inválida." };
+
+  return { valido: true, texto: "" };
+}
+
+export { validarRequired, validarCPF, validarSenha, validarEmail, validarCep, validarData, validarTelefone };

@@ -7,3 +7,7 @@ Projeto do alura de hooks, contexto e boas práticas.
 -> verificação de todos os campos requeridos com "onChange".
 
 -> verificação no momento do envio do formulário.
+
+-> busca cep
+
+-> use context para valores

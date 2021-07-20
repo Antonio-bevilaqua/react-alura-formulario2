@@ -1,7 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import ValidacoesCadastro from "../../context/ValidacoesCadastro";
-import { mascaraCPF } from "./mascaras.js";
+import { mascaraCPF, mascaraData, mascaraTelefone } from "./mascaras.js";
+import DadosCadastro from "../../context/DadosCadastro";
+import useValues from "../../hooks/useValues.js";
 import useErros from "../../hooks/useErros.js";
+
 import {
   TextField,
   Button,
@@ -11,13 +14,10 @@ import {
 } from "@material-ui/core";
 
 function DadosPessoais({ aoEnviar, voltar }) {
-  const [nome, setNome] = useState("");
-  const [sobrenome, setSobrenome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [promocoes, setPromocoes] = useState(true);
-  const [novidades, setNovidades] = useState(false);
   const validacoes = useContext(ValidacoesCadastro);
-  const [erros, validaCampo, validaForm] = useErros(validacoes);
+  const dadosCadastro = useContext(DadosCadastro);
+  const {erros, validaCampo, validaForm} = useErros(validacoes);
+  const {dadosColetados, insereDado, get} = useValues(dadosCadastro.dados);
 
   return (
     <form
@@ -25,20 +25,15 @@ function DadosPessoais({ aoEnviar, voltar }) {
       onSubmit={(event) => {
         event.preventDefault();
         if (validaForm(event)) {
-          aoEnviar({
-            nome: nome,
-            sobrenome: sobrenome,
-            cpf: cpf,
-            promocoes: promocoes,
-            novidades: novidades,
-          });
+          dadosCadastro.setDados(dadosColetados);
+          aoEnviar();
         }
       }}
     >
       <TextField
-        value={nome}
+        value={get("nome")}
         onChange={(event) => {
-          setNome(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         id="nome"
@@ -51,9 +46,9 @@ function DadosPessoais({ aoEnviar, voltar }) {
         fullWidth
       />
       <TextField
-        value={sobrenome}
+        value={get("sobrenome")}
         onChange={(event) => {
-          setSobrenome(event.target.value);
+          insereDado(event);
           validaCampo(event);
         }}
         id="sobrenome"
@@ -65,10 +60,27 @@ function DadosPessoais({ aoEnviar, voltar }) {
         error={!erros.sobrenome.valido}
         fullWidth
       />
+
       <TextField
-        value={cpf}
+        value={get("nascimento")}
         onChange={(event) => {
-          setCpf(mascaraCPF(event.target.value));
+          insereDado(event, mascaraData);
+          validaCampo(event);
+        }}
+        id="nascimento"
+        name="nascimento"
+        label="Data de nascimento:"
+        variant="outlined"
+        margin="normal"
+        helperText={erros.nascimento.texto}
+        error={!erros.nascimento.valido}
+        fullWidth
+      />
+
+      <TextField
+        value={get("cpf")}
+        onChange={(event) => {
+          insereDado(event, mascaraCPF);
           validaCampo(event);
         }}
         error={!erros.cpf.valido}
@@ -81,14 +93,30 @@ function DadosPessoais({ aoEnviar, voltar }) {
         fullWidth
       />
 
+      <TextField
+        value={get("telefone")}
+        onChange={(event) => {
+          insereDado(event, mascaraTelefone);
+          validaCampo(event);
+        }}
+        id="telefone"
+        name="telefone"
+        label="Telefone:"
+        variant="outlined"
+        margin="normal"
+        helperText={erros.telefone.texto}
+        error={!erros.telefone.valido}
+        fullWidth
+      />
+
       <Box component="div" display="flex" justifyContent="space-between">
         <FormControlLabel
           label="Promoções"
           control={
             <Switch
-              checked={promocoes}
+              checked={get("promocoes", true)}
               onChange={(event) => {
-                setPromocoes(event.target.checked);
+                insereDado(event);
               }}
               name="promocoes"
               color="primary"
@@ -100,9 +128,9 @@ function DadosPessoais({ aoEnviar, voltar }) {
           label="Novidades"
           control={
             <Switch
-              checked={novidades}
+              checked={get("novidades", true)}
               onChange={(event) => {
-                setNovidades(event.target.checked);
+                insereDado(event);
               }}
               name="novidades"
               color="primary"

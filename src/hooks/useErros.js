@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function useErros(validacoes) {
   const [erros, setErros] = useState(criarEstadoInicial(validacoes));
@@ -9,6 +9,20 @@ function useErros(validacoes) {
     let newErrors = {
       ...erros,
       [name]: validacoes[name](value),
+    };
+
+    setErros(newErrors);
+  }
+
+  //valida um campo
+  function validaCampoKeyValue(campos) {
+    let camposObj = {};
+    for (let obj in campos) {
+      camposObj[obj] = validacoes[obj](campos[obj])
+    }
+    let newErrors = {
+      ...erros,
+      ...camposObj,
     };
 
     setErros(newErrors);
@@ -28,7 +42,7 @@ function useErros(validacoes) {
     return validado;
   }
 
-  return [erros, validaCampo, validaForm];
+  return {erros, validaCampo, validaCampoKeyValue, validaForm};
 }
 
 //cria o estado inicial
