@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import DadosPessoais from "./DadosPessoais";
 import DadosUsuario from "./DadosUsuario";
 import DadosEntrega from "./DadosEntrega";
@@ -13,13 +13,14 @@ function FormularioCadastro({ aoEnviar }) {
   const formularios = [
     <DadosUsuario aoEnviar={proximaEtapa} />,
     <DadosPessoais aoEnviar={proximaEtapa} voltar={etapaAnterior} />,
-    <DadosEntrega aoEnviar={proximaEtapa} voltar={etapaAnterior} />,
+    <DadosEntrega aoEnviar={finalizar} voltar={etapaAnterior} />,
     <CadastroEnviado />,
   ];
 
-  useEffect(() => {
-    if (etapa === formularios.length - 1) aoEnviar(dadosColetados);
-  }, [dadosColetados, etapa, formularios.length, aoEnviar]);
+  function finalizar() {
+    proximaEtapa();
+    aoEnviar(dadosColetados);
+  }
 
   function proximaEtapa() {
     setEtapa(etapa + 1);
