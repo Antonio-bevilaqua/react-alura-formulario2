@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { Container, Typography } from "@material-ui/core";
+import FormularioCadastro from "./components/FormularioCadastro/FormularioCadastro";
+import ValidacoesCadastro from "./context/ValidacoesCadastro";
+import {
+  validarRequired,
+  validarCPF,
+  validarSenha,
+  validarEmail,
+  validarCep,
+} from "./models/cadastro";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+class App extends Component {
+  render() {
+    return (
+      <Container component="article" maxWidth="sm">
+        <Typography variant="h3" component="h1" align="center">
+          Formulário de cadastro
+        </Typography>
+        <ValidacoesCadastro.Provider
+          value={{
+            email: validarEmail,
+            senha: validarSenha,
+            nome: validarRequired,
+            sobrenome: validarRequired,
+            cpf: validarCPF,
+            cep: validarCep,
+            endereco: validarRequired,
+            numero: validarRequired,
+            cidade: validarRequired,
+            estado: validarRequired,
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+          <FormularioCadastro aoEnviar={aoEnviarForm} />
+        </ValidacoesCadastro.Provider>
+      </Container>
+    );
+  }
+}
+
+function aoEnviarForm(dados) {
+  console.log(dados);
 }
 
 export default App;
