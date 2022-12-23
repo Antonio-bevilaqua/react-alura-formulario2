@@ -1,5 +1,3 @@
-Projeto do alura de hooks, contexto e boas práticas.
-
 -> verificação de CPF em js utilizado.
 
 -> verificação de email em js utilizada.
